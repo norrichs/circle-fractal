@@ -10,14 +10,11 @@ import {
 	defaultConfig,
 } from "../../lib/generate-circles";
 import { CFAction } from "../../lib/use-circle-fractal";
-import { CompoundControl, useCompoundControl } from "./compound-control";
+import { CompoundControl, CompoundControlAction, useCompoundControl } from "./compound-control";
 import { ControlContainer } from "./control-fractal.styles";
 import { LevelControl } from "./level-control";
 
-interface CircleFractalControlsProps {
-	circleConfig: CircleFractalConfig;
-	dispatch: Dispatch<CFAction>;
-}
+
 
 const ControlHeader = styled.header`
   display: flex;
@@ -115,14 +112,20 @@ export const Select = styled.div<{show: boolean}>`
   }
 `
 
+interface CircleFractalControlsProps {
+	circleConfig: CircleFractalConfig;
+	circleDispatch: Dispatch<CFAction>;
+	compoundControls: CompoundControl[];
+	compoundConfigDispatch: Dispatch<CompoundControlAction>;
+}
+
 export const CircleFractalControls = ({
 	circleConfig,
-	dispatch,
+	circleDispatch,
+	compoundControls,
+	compoundConfigDispatch,
 }: CircleFractalControlsProps) => {
 	const [showControls, setShowControls] = useState(true);
-	// const [compoundConfig, setCompooundConfig] = useState<CompoundControl[]>([])
-	const { compoundControls, compoundConfigDispatch } = useCompoundControl();
-	const [compoundControlValue, setCompoundControlValue] = useState<number>(0.5);
 
 
 	return (
@@ -147,7 +150,7 @@ export const CircleFractalControls = ({
 							type="number"
 							value={circleConfig.r0}
 							onChange={(e) => {
-								dispatch({ type: "r0", payload: Number(e.target.value) });
+								circleDispatch({ type: "r0", payload: Number(e.target.value) });
 							}}
 						/>
 					</Control>
@@ -160,7 +163,7 @@ export const CircleFractalControls = ({
 								value={"inner"}
 								checked={circleConfig.alignment.parent === "inner"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, parent: "inner" },
 									})
@@ -171,7 +174,7 @@ export const CircleFractalControls = ({
 								value={"center"}
 								checked={circleConfig.alignment.parent === "center"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, parent: "center" },
 									})
@@ -182,7 +185,7 @@ export const CircleFractalControls = ({
 								value={"outer"}
 								checked={circleConfig.alignment.parent === "outer"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, parent: "outer" },
 									})
@@ -197,7 +200,7 @@ export const CircleFractalControls = ({
 								value={"inner"}
 								checked={circleConfig.alignment.child === "inner"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, child: "inner" },
 									})
@@ -208,7 +211,7 @@ export const CircleFractalControls = ({
 								value={"center"}
 								checked={circleConfig.alignment.child === "center"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, child: "center" },
 									})
@@ -219,7 +222,7 @@ export const CircleFractalControls = ({
 								value={"outer"}
 								checked={circleConfig.alignment.child === "outer"}
 								onChange={(e) =>
-									dispatch({
+									circleDispatch({
 										type: "alignment",
 										payload: { ...circleConfig.alignment, child: "outer" },
 									})
@@ -235,7 +238,7 @@ export const CircleFractalControls = ({
 							value={circleConfig.drawMode}
 							checked={circleConfig.drawMode === "circle"}
 							onChange={(e) =>
-								dispatch({
+								circleDispatch({
 									type: "drawMode",
 									payload: e.target.checked ? "circle" : "path",
 								})
@@ -255,7 +258,7 @@ export const CircleFractalControls = ({
 						<button
 							type="button"
 							onClick={() => {
-								dispatch({
+								circleDispatch({
 									type: "addLevel",
 									payload: circleConfig.levelParams.length,
 								});
@@ -292,7 +295,7 @@ export const CircleFractalControls = ({
 								}}
 								level={level}
 								levelParam={levelParam}
-								dispatch={dispatch}
+								dispatch={circleDispatch}
 							/>
 						);
 					})}
@@ -312,7 +315,7 @@ export const CircleFractalControls = ({
 							compoundControl={compoundControl}
 							onChange={(value: number) => compoundConfigDispatch({type: "controlValue", payload: {controlId: compoundControl.id, value}})}
 							circlesConfig={circleConfig}
-							dispatch={dispatch}
+							dispatch={circleDispatch}
 						/>
 					</CompoundControlContainer>
 				))}

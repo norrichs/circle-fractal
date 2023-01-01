@@ -302,6 +302,8 @@ const compoundControlReducer = (
 	let subIndex;
 	switch (action.type) {
 		case "config":
+			console.debug("ccReducer -> prevState", prevState)
+			console.debug("          -> newConfig", action.newConfig)
 			return [...action.newConfig];
 		case "add":
 			if (action.payload.msg) {
