@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useLocalStorage } from "../../utils/use-local-storage/use-local-storage";
 import { CircleFractal } from "./components/circle-fractal";
 import { CircleFractalControls } from "./components/circle-fractal-control/circle-fractal-control";
+import { StoredConfigs } from "./components/stored-configs/stored-configs";
 import {
 	CircleFractalConfig,
 	Alignment,
@@ -11,6 +12,7 @@ import {
 	RGBA,
 } from "./lib/generate-circles";
 import { useCircleFractal } from "./lib/use-circle-fractal";
+import { useCompoundControl } from "./components/circle-fractal-control/compound-control";
 
 const Container = styled.main`
   display: flex;
@@ -21,37 +23,23 @@ const Container = styled.main`
 
 export const CircleFractalPage = () => {
 	const { config, configDispatch } = useCircleFractal();
-	const [ storedValue, setValue ] = useLocalStorage("storedConfig", defaultConfig );
-
-	const handleStoreConfig = () => {
-		console.debug("store", config)
-		setValue(config)
-	}
-
-	const handleRetrieveConfig = () => {
-		console.debug("retrieve", storedValue)
-		configDispatch({type: "config", payload: {...storedValue}})
-	}
+	const { compoundControls, compoundConfigDispatch } = useCompoundControl();
 
 	return (
 		<Container>
 			{config && <CircleFractal config={config} />}
-			<CircleFractalControls circleConfig={config} dispatch={configDispatch} />
-			<div>
-				<button
-					type="button"
-					onClick={handleStoreConfig}
-				>
-					Store config
-				</button>
-				<button
-					type="button"
-					onClick={handleRetrieveConfig}
-				>
-					Retrieve config
-				</button>
-			</div>
-
+			<CircleFractalControls 
+				circleConfig={config} 
+				circleDispatch={configDispatch}
+				compoundControls={compoundControls}
+				compoundConfigDispatch={compoundConfigDispatch}
+			/>
+			<StoredConfigs 
+				circleDispatch={configDispatch} 
+				compoundDispatch={compoundConfigDispatch}
+				currentCircleConfig={config} 
+				currentCompoundConfig={compoundControls} 
+			/>
 		</Container>
 	);
 };
